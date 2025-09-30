@@ -15,7 +15,6 @@ from pyrogram.errors import MessageNotModified
 # --- Third-party Imports ---
 import yt_dlp
 from yt_dlp.utils import DownloadError
-#import ffmpeg_static  # <-- NEW ADDITION 1 of 2: Import the static ffmpeg library
 
 # --- LOGGING SETUP ---
 logging.basicConfig(format="%(asctime)s — %(name)s — %(levelname)s — %(message)s", level=logging.INFO)
@@ -76,10 +75,15 @@ def progress_hook(d, client: Client, chat_id: int, message_id: int, loop: asynci
         total = d.get('total_bytes') or d.get('total_bytes_estimate', 0)
         pct = (d.get('downloaded_bytes', 0) / total * 100) if total else 0
         bar = "█" * int(pct // 10) + "░" * (10 - int(pct // 10))
+        
+        # --- THE FINAL, DEFINITIVE FIX FOR THE TypeError ---
+        # Handle the case where ETA is None by defaulting to 0.
         eta = int(d.get('eta') or 0)
+        
         text = (f"<b>Downloading...</b>\n\n<code>{bar}</code> {pct:.1f}%\n\n"
                 f"<b>Size:</b> {humanbytes(d.get('downloaded_bytes', 0))} / {humanbytes(total)}\n"
                 f"<b>Speed:</b> {humanbytes(d.get('speed', 0))}/s | <b>ETA:</b> {eta}s")
+        
         coro = edit_message_helper(client, chat_id, message_id, text)
         asyncio.run_coroutine_threadsafe(coro, loop)
 
@@ -94,7 +98,6 @@ def blocking_download(url, hook_with_args, quality, send_format):
         "nocheckcertificate": True,
         "quiet": True,
         "postprocessors": [],
-        "ffmpeg_location": ffmpeg_static.get_ffmpeg_path(),  # <-- NEW ADDITION 2 of 2: Tell yt-dlp where to find ffmpeg
     }
 
     if send_format == 'audio':
@@ -126,7 +129,7 @@ def blocking_download(url, hook_with_args, quality, send_format):
         base, _ = os.path.splitext(filename); filename = base + ".mp4"
     return filename, info
 
-# --- BOT HANDLERS (No changes below this line) ---
+# --- BOT HANDLERS ---
 @app.on_message(filters.command("start"))
 async def start_handler(_, message: Message):
     keyboard = [[
