@@ -15,7 +15,7 @@ from pyrogram.errors import MessageNotModified
 # --- Third-party Imports ---
 import yt_dlp
 from yt_dlp.utils import DownloadError
-import ffmpeg_static  # <-- NEW ADDITION 1 of 2: Import the static ffmpeg library
+#import ffmpeg_static  # <-- NEW ADDITION 1 of 2: Import the static ffmpeg library
 
 # --- LOGGING SETUP ---
 logging.basicConfig(format="%(asctime)s — %(name)s — %(levelname)s — %(message)s", level=logging.INFO)
