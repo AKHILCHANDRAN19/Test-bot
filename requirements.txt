@@ -1,0 +1,9 @@
+# Telegram Framework
+pyrogram
+tgCrypto
+
+# System Stats for /stats command
+psutil
+
+# YouTube Downloader with Browser Impersonation
+yt-dlp[curl-cffi]
